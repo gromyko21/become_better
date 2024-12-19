@@ -18,34 +18,41 @@ import (
 	swagerDocs "become_better/internal/api/docs"
 )
 
-type Server struct {
-    gen.UnimplementedBecomeBetterServer
-}
 
 func main() {
-	config := config.New()
-	go runRest(config)
-	runGRPc(config)
+	localConfig := config.New()
+	ctx := context.Background()
+
+	db, err := config.NewPG(ctx, localConfig.ConnString)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	app := config.App{
+		Postgres: db,
+	}
+
+	go runRest(localConfig)
+	runGRPc(localConfig, app)
 }
 
-func runGRPc(config *config.Config) {
+func runGRPc(localConfig *config.Config, app config.App) {
 
-	lis, err := net.Listen("tcp", ":" + config.CommonConfig.GRPcPort)
-    if err != nil {
-        logrus.Fatalf("failed to listen: %v", err)
-    }
-	logrus.Info(fmt.Sprintf("Started listening tcp port %s for GRPc", config.CommonConfig.GRPcPort))
+	lis, err := net.Listen("tcp", ":"+localConfig.CommonConfig.GRPcPort)
+	if err != nil {
+		logrus.Fatalf("failed to listen: %v", err)
+	}
+	logrus.Info(fmt.Sprintf("Started listening tcp port %s for GRPc", localConfig.CommonConfig.GRPcPort))
 
-    grpcServer := grpc.NewServer()
-    gen.RegisterBecomeBetterServer(grpcServer, &api.HelloService{})
+	grpcServer := grpc.NewServer()
+	gen.RegisterBecomeBetterServer(grpcServer, &api.HelloService{App:app})
 	reflection.Register(grpcServer)
 	logrus.Info("Service has been started")
 
-    if err := grpcServer.Serve(lis); err != nil {
-        logrus.Fatalf("failed to serve: %v", err)
-    }
+	if err := grpcServer.Serve(lis); err != nil {
+		logrus.Fatalf("failed to serve: %v", err)
+	}
 }
-
 
 func runRest(config *config.Config) {
 	ctx := context.Background()
@@ -54,7 +61,7 @@ func runRest(config *config.Config) {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := gen.RegisterBecomeBetterHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%s", config.CommonConfig.Host ,config.CommonConfig.GRPcPort), opts)
+	err := gen.RegisterBecomeBetterHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%s", config.CommonConfig.Host, config.CommonConfig.GRPcPort), opts)
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +76,7 @@ func runRest(config *config.Config) {
 		panic(err)
 	}
 
-	logrus.Info(fmt.Sprintf("Server listening at %s", fmt.Sprintf("%s:%s",config.CommonConfig.Host ,config.CommonConfig.HTTPport)))
+	logrus.Info(fmt.Sprintf("Server listening at %s", fmt.Sprintf("%s:%s", config.CommonConfig.Host, config.CommonConfig.HTTPport)))
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", config.CommonConfig.HTTPport), mux); err != nil {
 		panic(err)
 	}
