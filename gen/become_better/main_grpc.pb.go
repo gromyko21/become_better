@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.0
-// source: proto/tracker.proto
+// source: proto/main.proto
 
 package become_better
 
@@ -25,8 +25,6 @@ const (
 // BecomeBetterClient is the client API for BecomeBetter service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// Определение gRPC-сервиса
 type BecomeBetterClient interface {
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error)
 }
@@ -52,8 +50,6 @@ func (c *becomeBetterClient) SayHello(ctx context.Context, in *HelloRequest, opt
 // BecomeBetterServer is the server API for BecomeBetter service.
 // All implementations must embed UnimplementedBecomeBetterServer
 // for forward compatibility.
-//
-// Определение gRPC-сервиса
 type BecomeBetterServer interface {
 	SayHello(context.Context, *HelloRequest) (*HelloResponse, error)
 	mustEmbedUnimplementedBecomeBetterServer()
@@ -121,5 +117,5 @@ var BecomeBetter_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/tracker.proto",
+	Metadata: "proto/main.proto",
 }
