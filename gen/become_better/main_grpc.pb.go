@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BecomeBetter_SayHello_FullMethodName = "/example.BecomeBetter/SayHello"
+	BecomeBetter_MainCategories_FullMethodName = "/example.BecomeBetter/MainCategories"
 )
 
 // BecomeBetterClient is the client API for BecomeBetter service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BecomeBetterClient interface {
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error)
+	MainCategories(ctx context.Context, in *MainCategoriesRequest, opts ...grpc.CallOption) (*MainCategoriesResponse, error)
 }
 
 type becomeBetterClient struct {
@@ -37,10 +37,10 @@ func NewBecomeBetterClient(cc grpc.ClientConnInterface) BecomeBetterClient {
 	return &becomeBetterClient{cc}
 }
 
-func (c *becomeBetterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error) {
+func (c *becomeBetterClient) MainCategories(ctx context.Context, in *MainCategoriesRequest, opts ...grpc.CallOption) (*MainCategoriesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(HelloResponse)
-	err := c.cc.Invoke(ctx, BecomeBetter_SayHello_FullMethodName, in, out, cOpts...)
+	out := new(MainCategoriesResponse)
+	err := c.cc.Invoke(ctx, BecomeBetter_MainCategories_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *becomeBetterClient) SayHello(ctx context.Context, in *HelloRequest, opt
 // All implementations must embed UnimplementedBecomeBetterServer
 // for forward compatibility.
 type BecomeBetterServer interface {
-	SayHello(context.Context, *HelloRequest) (*HelloResponse, error)
+	MainCategories(context.Context, *MainCategoriesRequest) (*MainCategoriesResponse, error)
 	mustEmbedUnimplementedBecomeBetterServer()
 }
 
@@ -62,8 +62,8 @@ type BecomeBetterServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBecomeBetterServer struct{}
 
-func (UnimplementedBecomeBetterServer) SayHello(context.Context, *HelloRequest) (*HelloResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
+func (UnimplementedBecomeBetterServer) MainCategories(context.Context, *MainCategoriesRequest) (*MainCategoriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MainCategories not implemented")
 }
 func (UnimplementedBecomeBetterServer) mustEmbedUnimplementedBecomeBetterServer() {}
 func (UnimplementedBecomeBetterServer) testEmbeddedByValue()                      {}
@@ -86,20 +86,20 @@ func RegisterBecomeBetterServer(s grpc.ServiceRegistrar, srv BecomeBetterServer)
 	s.RegisterService(&BecomeBetter_ServiceDesc, srv)
 }
 
-func _BecomeBetter_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
+func _BecomeBetter_MainCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MainCategoriesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BecomeBetterServer).SayHello(ctx, in)
+		return srv.(BecomeBetterServer).MainCategories(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BecomeBetter_SayHello_FullMethodName,
+		FullMethod: BecomeBetter_MainCategories_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BecomeBetterServer).SayHello(ctx, req.(*HelloRequest))
+		return srv.(BecomeBetterServer).MainCategories(ctx, req.(*MainCategoriesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -112,8 +112,8 @@ var BecomeBetter_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*BecomeBetterServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SayHello",
-			Handler:    _BecomeBetter_SayHello_Handler,
+			MethodName: "MainCategories",
+			Handler:    _BecomeBetter_MainCategories_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

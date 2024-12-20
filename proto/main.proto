@@ -6,19 +6,22 @@ import "google/api/annotations.proto";
 
 package example;
 
-message HelloRequest {
-  string name = 1;
+message MainCategoriesRequest {}
+
+message MainCategoriesResponse {
+  repeated MainCategories MainCategories = 1;
 }
 
-message HelloResponse {
-  string message = 1;
+message MainCategories {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
 }
 
 service BecomeBetter {
-  rpc SayHello (HelloRequest) returns (HelloResponse) {
+  rpc MainCategories (MainCategoriesRequest) returns (MainCategoriesResponse) {
     option (google.api.http) = {
-      post: "/v1/hello"
-      body: "*"
+      get: "/v1/main_categories"
     };
   }
 }
