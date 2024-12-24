@@ -44,13 +44,15 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "name": {
           "type": "string"
         },
         "description": {
+          "type": "string"
+        },
+        "mainCategory": {
           "type": "string"
         }
       }

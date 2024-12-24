@@ -6,17 +6,6 @@ import "google/api/annotations.proto";
 
 package example;
 
-message MainCategoriesRequest {}
-
-message MainCategoriesResponse {
-  repeated MainCategories MainCategories = 1;
-}
-
-message MainCategories {
-  int32 id = 1;
-  string name = 2;
-  string description = 3;
-}
 
 service BecomeBetter {
   rpc MainCategories (MainCategoriesRequest) returns (MainCategoriesResponse) {
@@ -24,4 +13,17 @@ service BecomeBetter {
       get: "/v1/main_categories"
     };
   }
+}
+
+message MainCategoriesRequest {}
+
+message MainCategoriesResponse {
+  repeated MainCategories MainCategories = 1;
+}
+
+message MainCategories {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string main_category = 4;
 }
