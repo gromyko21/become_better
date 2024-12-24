@@ -81,7 +81,7 @@ func TestMainCategories(t *testing.T) {
 func TestCategoriesToProto(t *testing.T) {
 	id := uuid.New()
 	in := []models.Categories{
-		models.Categories{
+		{
 			ID: id,
 			MainCategory: models.CategoryStudy,
 			Description: "desc",
@@ -89,7 +89,7 @@ func TestCategoriesToProto(t *testing.T) {
 		},
 	}
 	out := []*gen.MainCategories{
-		&gen.MainCategories{
+		{
 			Id: id.String(),
 			Name: "test",
 			Description: "desc",

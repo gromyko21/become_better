@@ -34,10 +34,9 @@ func TestMainCategories(t *testing.T) {
 			mockError: nil,
 			expectedResult: &gen.MainCategoriesResponse{
 				MainCategories: []*gen.MainCategories{
-					&gen.MainCategories{Id: "1", Name:"Category1",},
-					&gen.MainCategories{Id: "2", Name:"Category2",},
+					{Id: "1", Name: "Category1"},
+					{Id: "2", Name: "Category2"},
 				},
-
 			},
 			expectedError: false,
 		},
