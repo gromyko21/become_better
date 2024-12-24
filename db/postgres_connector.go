@@ -1,4 +1,4 @@
-package config
+package db
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 type Postgres struct {
-	db *pgxpool.Pool
+	Pool *pgxpool.Pool
 }
 
 var (
@@ -20,13 +20,11 @@ var (
 
 func NewPG(ctx context.Context, connString string) (*Postgres, error) {
 	var initErr error
-
 	pgOnce.Do(func() {
 		db, err := pgxpool.New(ctx, connString)
 		if err != nil {
 			initErr = fmt.Errorf("unable to create connection pool: %w", err)
 			logrus.Errorf("unable to create connection pool: %v", err)
-			return 
 		}
 
 		pgInstance = &Postgres{db}
@@ -40,5 +38,5 @@ func NewPG(ctx context.Context, connString string) (*Postgres, error) {
 }
 
 func (pg *Postgres) Close() {
-	pg.db.Close()
+	pg.Pool.Close()
 }

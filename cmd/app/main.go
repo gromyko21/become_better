@@ -13,17 +13,19 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	config "become_better/config"
+	database "become_better/db"
 	gen "become_better/gen/become_better"
 	api "become_better/internal/api/become_better"
 	swagerDocs "become_better/internal/api/docs"
+	"become_better/internal/api/models"
+	"become_better/internal/api/services"
 )
-
 
 func main() {
 	localConfig := config.New()
 	ctx := context.Background()
 
-	db, err := config.NewPG(ctx, localConfig.ConnString)
+	db, err := database.NewPG(ctx, localConfig.ConnString)
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -33,10 +35,10 @@ func main() {
 	}
 
 	go runRest(localConfig)
-	runGRPc(localConfig, app)
+	runGRPc(ctx, localConfig, app)
 }
 
-func runGRPc(localConfig *config.Config, app config.App) {
+func runGRPc(ctx context.Context, localConfig *config.Config, app config.App) {
 
 	lis, err := net.Listen("tcp", ":"+localConfig.CommonConfig.GRPcPort)
 	if err != nil {
@@ -45,7 +47,13 @@ func runGRPc(localConfig *config.Config, app config.App) {
 	logrus.Info(fmt.Sprintf("Started listening tcp port %s for GRPc", localConfig.CommonConfig.GRPcPort))
 
 	grpcServer := grpc.NewServer()
-	gen.RegisterBecomeBetterServer(grpcServer, &api.HelloService{App:app})
+	gen.RegisterBecomeBetterServer(grpcServer, &api.MainService{
+		App: app,
+		Ctx: ctx,
+		MainCategoriesInterface: &services.CategoriesServiceImpl{
+			CategoriesModelInterface: &models.CategoriesModelImpl{},
+		},
+	})
 	reflection.Register(grpcServer)
 	logrus.Info("Service has been started")
 
