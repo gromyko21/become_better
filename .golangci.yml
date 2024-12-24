@@ -5,6 +5,7 @@ run:
 
   skip-dirs:
     - go/*
+    - mocks/*
 
 
 # This file contains only configs which differ from defaults.
