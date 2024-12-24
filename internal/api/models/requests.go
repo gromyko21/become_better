@@ -32,7 +32,6 @@ func (c *CategoriesModelImpl) GetCategories(ctx context.Context, pool *pgxpool.P
 		logrus.Error(err)
 		return nil, err
 	}
-	logrus.Info(222)
 
 	return categories, err
 }
