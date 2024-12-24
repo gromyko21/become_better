@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	gen "become_better/gen/become_better"
+	gen "become_better/src/gen/become_better"
 )
 
 func (s *MainService) MainCategories(ctx context.Context, req *gen.MainCategoriesRequest) (*gen.MainCategoriesResponse, error) {

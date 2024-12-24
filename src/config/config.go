@@ -6,7 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 
-	database "become_better/db"
+	database "become_better/src/db"
 )
 
 type CommonConfig struct {

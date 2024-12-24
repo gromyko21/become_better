@@ -3,9 +3,9 @@ package api
 import (
 	"context"
 
-	config "become_better/config"
-	gen "become_better/gen/become_better"
-	"become_better/internal/api/services"
+	config "become_better/src/config"
+	gen "become_better/src/gen/become_better"
+	"become_better/src/internal/api/services"
 )
 
 type MainService struct {

@@ -8,12 +8,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"become_better/config"
-	gen "become_better/gen/become_better"
-	api "become_better/internal/api/become_better"
+	"become_better/src/config"
+	gen "become_better/src/gen/become_better"
+	api "become_better/src/internal/api/become_better"
 
-	database "become_better/db"
-	"become_better/internal/api/become_better/mocks"
+	database "become_better/src/db"
+	"become_better/src/internal/api/become_better/mocks"
 )
 
 func TestMainCategories(t *testing.T) {

@@ -12,13 +12,13 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	config "become_better/config"
-	database "become_better/db"
-	gen "become_better/gen/become_better"
-	api "become_better/internal/api/become_better"
-	swagerDocs "become_better/internal/api/docs"
-	"become_better/internal/api/models"
-	"become_better/internal/api/services"
+	config "become_better/src/config"
+	database "become_better/src/db"
+	gen "become_better/src/gen/become_better"
+	api "become_better/src/internal/api/become_better"
+	swagerDocs "become_better/src/internal/api/docs"
+	"become_better/src/internal/api/models"
+	"become_better/src/internal/api/services"
 )
 
 func main() {

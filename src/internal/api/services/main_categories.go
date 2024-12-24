@@ -6,8 +6,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
 
-	gen "become_better/gen/become_better"
-	"become_better/internal/api/models"
+	gen "become_better/src/gen/become_better"
+	"become_better/src/internal/api/models"
 )
 
 type MainCategoriesInterface interface {

@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	become_better "become_better/gen/become_better"
+	become_better "become_better/src/gen/become_better"
 	context "context"
 
 	mock "github.com/stretchr/testify/mock"
