@@ -1,4 +1,4 @@
-package main_test
+package api
 
 import (
 	"context"
@@ -10,7 +10,6 @@ import (
 
 	"become_better/src/config"
 	gen "become_better/src/gen/become_better"
-	api "become_better/src/internal/api/become_better"
 
 	database "become_better/src/db"
 	"become_better/src/internal/api/become_better/mocks"
@@ -56,7 +55,7 @@ func TestMainCategories(t *testing.T) {
 			mockCategoriesService.On("MainCategories", mock.Anything, mock.Anything, mock.Anything).
 				Return(tt.mockResponse, tt.mockError)
 
-			mainService := &api.MainService{
+			mainService := &MainService{
 				MainCategoriesInterface: mockCategoriesService,
 				Ctx: context.Background(),
 				App: config.App{Postgres: &database.Postgres{}},

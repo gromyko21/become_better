@@ -1,4 +1,4 @@
-package service_test
+package services
 
 import (
 	"context"
@@ -12,7 +12,6 @@ import (
 
 	gen "become_better/src/gen/become_better"
 	"become_better/src/internal/api/models"
-	"become_better/src/internal/api/services"
 	"become_better/src/internal/api/services/mocks"
 )
 
@@ -56,7 +55,7 @@ func TestMainCategories(t *testing.T) {
 			mockCategoriesModelInterface.On("GetCategories", mock.Anything, mock.Anything).
 				Return(tt.mockResponse, tt.mockError)
 
-			categoriesService := services.CategoriesServiceImpl{
+			categoriesService := CategoriesServiceImpl{
 				CategoriesModelInterface: mockCategoriesModelInterface,
 			}
 
@@ -96,7 +95,7 @@ func TestCategoriesToProto(t *testing.T) {
 			MainCategory: "Учеба",
 		},
 	}
-	response := services.CategoriesToProto(in)
+	response := CategoriesToProto(in)
 
 	assert.Equal(t, out, response)
 }
