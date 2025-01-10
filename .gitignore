@@ -1,2 +1,2 @@
-config/.env
+src/config/.env
 .DS_Store
