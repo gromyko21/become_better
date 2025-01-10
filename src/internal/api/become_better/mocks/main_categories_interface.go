@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	become_better "become_better/src/gen/become_better"
+	models "become_better/src/internal/api/models"
 	context "context"
 
 	mock "github.com/stretchr/testify/mock"
@@ -16,24 +16,54 @@ type MainCategoriesInterface struct {
 	mock.Mock
 }
 
+// AddCategories provides a mock function with given fields: ctx, pool, category
+func (_m *MainCategoriesInterface) AddCategories(ctx context.Context, pool *pgxpool.Pool, category *models.Category) (*models.Category, error) {
+	ret := _m.Called(ctx, pool, category)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AddCategories")
+	}
+
+	var r0 *models.Category
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool, *models.Category) (*models.Category, error)); ok {
+		return rf(ctx, pool, category)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool, *models.Category) *models.Category); ok {
+		r0 = rf(ctx, pool, category)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Category)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *pgxpool.Pool, *models.Category) error); ok {
+		r1 = rf(ctx, pool, category)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // MainCategories provides a mock function with given fields: ctx, pool
-func (_m *MainCategoriesInterface) MainCategories(ctx context.Context, pool *pgxpool.Pool) ([]*become_better.MainCategories, error) {
+func (_m *MainCategoriesInterface) MainCategories(ctx context.Context, pool *pgxpool.Pool) ([]models.Category, error) {
 	ret := _m.Called(ctx, pool)
 
 	if len(ret) == 0 {
 		panic("no return value specified for MainCategories")
 	}
 
-	var r0 []*become_better.MainCategories
+	var r0 []models.Category
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool) ([]*become_better.MainCategories, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool) ([]models.Category, error)); ok {
 		return rf(ctx, pool)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool) []*become_better.MainCategories); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool) []models.Category); ok {
 		r0 = rf(ctx, pool)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*become_better.MainCategories)
+			r0 = ret.Get(0).([]models.Category)
 		}
 	}
 

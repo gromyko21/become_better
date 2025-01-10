@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	BecomeBetter_MainCategories_FullMethodName = "/example.BecomeBetter/MainCategories"
+	BecomeBetter_AddCategories_FullMethodName  = "/example.BecomeBetter/AddCategories"
 )
 
 // BecomeBetterClient is the client API for BecomeBetter service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BecomeBetterClient interface {
 	MainCategories(ctx context.Context, in *MainCategoriesRequest, opts ...grpc.CallOption) (*MainCategoriesResponse, error)
+	AddCategories(ctx context.Context, in *AddCategoryMessage, opts ...grpc.CallOption) (*MainCategoriesMessage, error)
 }
 
 type becomeBetterClient struct {
@@ -47,11 +49,22 @@ func (c *becomeBetterClient) MainCategories(ctx context.Context, in *MainCategor
 	return out, nil
 }
 
+func (c *becomeBetterClient) AddCategories(ctx context.Context, in *AddCategoryMessage, opts ...grpc.CallOption) (*MainCategoriesMessage, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MainCategoriesMessage)
+	err := c.cc.Invoke(ctx, BecomeBetter_AddCategories_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BecomeBetterServer is the server API for BecomeBetter service.
 // All implementations must embed UnimplementedBecomeBetterServer
 // for forward compatibility.
 type BecomeBetterServer interface {
 	MainCategories(context.Context, *MainCategoriesRequest) (*MainCategoriesResponse, error)
+	AddCategories(context.Context, *AddCategoryMessage) (*MainCategoriesMessage, error)
 	mustEmbedUnimplementedBecomeBetterServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedBecomeBetterServer struct{}
 
 func (UnimplementedBecomeBetterServer) MainCategories(context.Context, *MainCategoriesRequest) (*MainCategoriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MainCategories not implemented")
+}
+func (UnimplementedBecomeBetterServer) AddCategories(context.Context, *AddCategoryMessage) (*MainCategoriesMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCategories not implemented")
 }
 func (UnimplementedBecomeBetterServer) mustEmbedUnimplementedBecomeBetterServer() {}
 func (UnimplementedBecomeBetterServer) testEmbeddedByValue()                      {}
@@ -104,6 +120,24 @@ func _BecomeBetter_MainCategories_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BecomeBetter_AddCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddCategoryMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BecomeBetterServer).AddCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BecomeBetter_AddCategories_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BecomeBetterServer).AddCategories(ctx, req.(*AddCategoryMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BecomeBetter_ServiceDesc is the grpc.ServiceDesc for BecomeBetter service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var BecomeBetter_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MainCategories",
 			Handler:    _BecomeBetter_MainCategories_Handler,
+		},
+		{
+			MethodName: "AddCategories",
+			Handler:    _BecomeBetter_AddCategories_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

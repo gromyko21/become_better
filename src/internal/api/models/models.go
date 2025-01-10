@@ -14,7 +14,7 @@ var MainCategoriesMap = map[int32]string{
 	CategoryTraning: "Тренировки",
 }
 
-type Categories struct {
+type Category struct {
 	ID uuid.UUID `db:"id"`
 	MainCategory int32 `db:"main_category"`
 	Name string `db:"name"`

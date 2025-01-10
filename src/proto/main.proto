@@ -13,17 +13,28 @@ service BecomeBetter {
       get: "/v1/main_categories"
     };
   }
+  rpc AddCategories (AddCategoryMessage) returns (MainCategoriesMessage) {
+    option (google.api.http) = {
+      post: "/v1/main_categories"
+    };
+  }
 }
 
 message MainCategoriesRequest {}
 
 message MainCategoriesResponse {
-  repeated MainCategories MainCategories = 1;
+  repeated MainCategoriesMessage MainCategories = 1;
 }
 
-message MainCategories {
+message MainCategoriesMessage {
   string id = 1;
   string name = 2;
   string description = 3;
   string main_category = 4;
+}
+
+message AddCategoryMessage {
+  string name = 1;
+  string description = 2;
+  int32 main_category = 3;
 }

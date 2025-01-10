@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -13,35 +14,35 @@ import (
 
 	database "become_better/src/db"
 	"become_better/src/internal/api/become_better/mocks"
+	"become_better/src/internal/api/models"
 )
 
 func TestMainCategories(t *testing.T) {
+	uuidID := uuid.New()
 
 	tests := []struct {
 		name           string
-		mockResponse   []*gen.MainCategories
+		mockResponse   []models.Category
 		mockError      error
 		expectedResult *gen.MainCategoriesResponse
 		expectedError  bool
 	}{
 		{
 			name: "success",
-			mockResponse: []*gen.MainCategories{
-				{Id: "1", Name: "Category1"},
-				{Id: "2", Name: "Category2"},
+			mockResponse: []models.Category{
+				{ID: uuidID, Name: "Category1", MainCategory: models.CategoryStudy},
 			},
 			mockError: nil,
 			expectedResult: &gen.MainCategoriesResponse{
-				MainCategories: []*gen.MainCategories{
-					{Id: "1", Name: "Category1"},
-					{Id: "2", Name: "Category2"},
+				MainCategories: []*gen.MainCategoriesMessage{
+					{Id: uuidID.String(), Name: "Category1", MainCategory: "Учеба"},
 				},
 			},
 			expectedError: false,
 		},
 		{
 			name: "fail",
-			mockResponse: []*gen.MainCategories{},
+			mockResponse: []models.Category{},
 			mockError: errors.New("some error"),
 			expectedResult: &gen.MainCategoriesResponse{},
 			expectedError: true,
@@ -76,4 +77,27 @@ func TestMainCategories(t *testing.T) {
 			mockCategoriesService.AssertExpectations(t)
 		})
 	}
+}
+
+func TestCategoriesToProto(t *testing.T) {
+	id := uuid.New()
+	in := []models.Category{
+		{
+			ID: id,
+			MainCategory: models.CategoryStudy,
+			Description: "desc",
+			Name: "test",
+		},
+	}
+	out := []*gen.MainCategoriesMessage{
+		{
+			Id: id.String(),
+			Name: "test",
+			Description: "desc",
+			MainCategory: "Учеба",
+		},
+	}
+	response := CategoriesToProto(in)
+
+	assert.Equal(t, out, response)
 }

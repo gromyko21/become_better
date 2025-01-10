@@ -36,11 +36,52 @@
         "tags": [
           "BecomeBetter"
         ]
+      },
+      "post": {
+        "operationId": "BecomeBetter_AddCategories",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/exampleMainCategoriesMessage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "mainCategory",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "BecomeBetter"
+        ]
       }
     }
   },
   "definitions": {
-    "exampleMainCategories": {
+    "exampleMainCategoriesMessage": {
       "type": "object",
       "properties": {
         "id": {
@@ -64,7 +105,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/exampleMainCategories"
+            "$ref": "#/definitions/exampleMainCategoriesMessage"
           }
         }
       }

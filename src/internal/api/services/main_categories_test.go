@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	gen "become_better/src/gen/become_better"
 	"become_better/src/internal/api/models"
 	"become_better/src/internal/api/services/mocks"
 )
@@ -26,16 +25,16 @@ func TestMainCategories(t *testing.T) {
 
 	tests := []struct {
 		name           string
-		mockResponse   []models.Categories
+		mockResponse   []models.Category
 		mockError      error
-		expectedResult []*gen.MainCategories
+		expectedResult []models.Category
 		expectedError  bool
 	}{
 		{
 			name:           "fail",
-			mockResponse:   []models.Categories{},
+			mockResponse:   []models.Category{},
 			mockError:      errors.New("some error"),
-			expectedResult: []*gen.MainCategories{},
+			expectedResult: []models.Category{},
 			expectedError:  true,
 		},
 		{
@@ -76,26 +75,75 @@ func TestMainCategories(t *testing.T) {
 	}
 }
 
+func TestAddCategories(t *testing.T) {
 
-func TestCategoriesToProto(t *testing.T) {
+	connString := ""
+	pool, err := pgxpool.New(context.Background(), connString)
+	if err != nil {
+		t.Fatalf("Unable to create connection pool: %v", err)
+	}
+	defer pool.Close()
 	id := uuid.New()
-	in := []models.Categories{
-		{
-			ID: id,
-			MainCategory: models.CategoryStudy,
-			Description: "desc",
-			Name: "test",
-		},
-	}
-	out := []*gen.MainCategories{
-		{
-			Id: id.String(),
-			Name: "test",
-			Description: "desc",
-			MainCategory: "Учеба",
-		},
-	}
-	response := CategoriesToProto(in)
 
-	assert.Equal(t, out, response)
+	tests := []struct {
+		name           string
+		category       models.Category
+		mockResponse   models.Category
+		mockError      error
+		expectedResult *models.Category
+		expectedError  bool
+	}{
+		{
+			name:           "fail",
+			mockResponse:   models.Category{},
+			mockError:      errors.New("some error"),
+			expectedResult: &models.Category{},
+			expectedError:  true,
+		},
+		{
+			name:           "success",
+			mockResponse:   models.Category{
+				ID: id,
+				Name: "name",
+				Description: "desc",
+				MainCategory: 1,
+			},
+			mockError:      nil,
+			expectedResult: &models.Category{
+				ID: id,
+				Name: "name",
+				Description: "desc",
+				MainCategory: 1,
+			},
+			expectedError:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+
+			mockCategoriesModelInterface := new(mocks.CategoriesModelInterface)
+			mockCategoriesModelInterface.On("AddCategory", mock.Anything, mock.Anything, &tt.category).
+				Return(&tt.mockResponse, tt.mockError)
+
+			categoriesService := CategoriesServiceImpl{
+				CategoriesModelInterface: mockCategoriesModelInterface,
+			}
+
+			// Вызов метода
+			res, err := categoriesService.AddCategories(ctx, pool, &tt.category)
+
+			// Проверка результата
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedResult, res)
+			}
+
+			// Проверяем вызов моков
+			mockCategoriesModelInterface.AssertExpectations(t)
+		})
+	}
 }

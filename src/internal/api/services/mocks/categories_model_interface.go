@@ -16,24 +16,54 @@ type CategoriesModelInterface struct {
 	mock.Mock
 }
 
+// AddCategory provides a mock function with given fields: ctx, pool, category
+func (_m *CategoriesModelInterface) AddCategory(ctx context.Context, pool *pgxpool.Pool, category *models.Category) (*models.Category, error) {
+	ret := _m.Called(ctx, pool, category)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AddCategory")
+	}
+
+	var r0 *models.Category
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool, *models.Category) (*models.Category, error)); ok {
+		return rf(ctx, pool, category)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool, *models.Category) *models.Category); ok {
+		r0 = rf(ctx, pool, category)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Category)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *pgxpool.Pool, *models.Category) error); ok {
+		r1 = rf(ctx, pool, category)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetCategories provides a mock function with given fields: ctx, pool
-func (_m *CategoriesModelInterface) GetCategories(ctx context.Context, pool *pgxpool.Pool) ([]models.Categories, error) {
+func (_m *CategoriesModelInterface) GetCategories(ctx context.Context, pool *pgxpool.Pool) ([]models.Category, error) {
 	ret := _m.Called(ctx, pool)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetCategories")
 	}
 
-	var r0 []models.Categories
+	var r0 []models.Category
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool) ([]models.Categories, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool) ([]models.Category, error)); ok {
 		return rf(ctx, pool)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool) []models.Categories); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool) []models.Category); ok {
 		r0 = rf(ctx, pool)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]models.Categories)
+			r0 = ret.Get(0).([]models.Category)
 		}
 	}
 
