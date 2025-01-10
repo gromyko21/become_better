@@ -48,6 +48,8 @@ func TestMainCategories(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			
 			ctx := context.Background()
 
 			mockCategoriesModelInterface := new(mocks.CategoriesModelInterface)
@@ -121,6 +123,8 @@ func TestAddCategories(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			ctx := context.Background()
 
 			mockCategoriesModelInterface := new(mocks.CategoriesModelInterface)

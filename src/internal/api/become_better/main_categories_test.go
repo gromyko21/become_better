@@ -52,6 +52,8 @@ func TestMainCategories(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			
 			mockCategoriesService := new(mocks.MainCategoriesInterface)
 			mockCategoriesService.On("MainCategories", mock.Anything, mock.Anything, mock.Anything).
 				Return(tt.mockResponse, tt.mockError)

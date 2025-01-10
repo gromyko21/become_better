@@ -20,9 +20,9 @@ import (
 func TestAddCategories(t *testing.T) {
 	uuidID := uuid.New()
 	
-	tests := []struct {
+	tests := []*struct {
 		name           string
-		category gen.AddCategoryMessage
+		category       gen.AddCategoryMessage
 		mockResponse   models.Category
 		mockError      error
 		expectedResult *gen.MainCategoriesMessage
@@ -51,33 +51,35 @@ func TestAddCategories(t *testing.T) {
 			expectedError: true,
 		},
 	}
-
-	for _, tt := range tests { 
+	
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			mockCategoriesService := new(mocks.MainCategoriesInterface)
 			mockCategoriesService.On("AddCategories", mock.Anything, mock.Anything, mock.Anything).
 				Return(&tt.mockResponse, tt.mockError)
-
+	
 			mainService := &MainService{
 				MainCategoriesInterface: mockCategoriesService,
 				Ctx: context.Background(),
 				App: config.App{Postgres: &database.Postgres{}},
 			}
-
+	
 			// Вызов метода
 			res, err := mainService.AddCategories(context.Background(), &tt.category)
-
+	
 			// Проверка результата
 			if tt.expectedError {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expectedResult, res)
-
+	
 				// Проверяем вызов моков
 				mockCategoriesService.AssertExpectations(t)
 			}
-
 		})
 	}
+	
 }
