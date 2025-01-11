@@ -12,8 +12,7 @@ import (
 func (s *MainService) AddCategories(ctx context.Context, newCategory *gen.AddCategoryMessage) (*gen.MainCategoriesMessage, error) {
 
 
-	ff, ok := models.MainCategoriesMap[newCategory.MainCategory]
-	fmt.Println(999, ok, ff, newCategory)
+	_, ok := models.MainCategoriesMap[newCategory.MainCategory]
 	if !ok {
 		return nil, fmt.Errorf("category with such ID - %v doesn't exist", newCategory.MainCategory)
 	}
