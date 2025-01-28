@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"become_better/src/internal/api/models"
-	"become_better/src/internal/api/services/mocks"
+	"become_better/src/internal/models"
+	"become_better/src/internal/models/mocks"
 )
 
 func TestMainCategories(t *testing.T) {

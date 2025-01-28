@@ -18,9 +18,16 @@ service BecomeBetter {
       post: "/v1/main_categories"
     };
   }
+  rpc FillProgress (FillProgressRequest) returns (EmptyResponse) {
+    option (google.api.http) = {
+      post: "/v1/fill_progress"
+    };
+  }
 }
 
 message MainCategoriesRequest {}
+
+message EmptyResponse {}
 
 message MainCategoriesResponse {
   repeated MainCategoriesMessage MainCategories = 1;
@@ -37,4 +44,13 @@ message AddCategoryMessage {
   string name = 1;
   string description = 2;
   int32 main_category = 3;
+  int32 category_type = 4;
+}
+
+message FillProgressRequest {
+  string category_id = 1; // uuid категории
+  string description = 2;
+  string user_id = 3;
+  int32 result = 4; // Минуты, страницы и тп(количественное значение)
+  string date = 5; // Когда было сделано DD.MM.YYYY
 }

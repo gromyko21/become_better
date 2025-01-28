@@ -16,6 +16,64 @@
     "application/json"
   ],
   "paths": {
+    "/v1/fill_progress": {
+      "post": {
+        "operationId": "BecomeBetter_FillProgress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/exampleEmptyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "categoryId",
+            "description": "uuid категории",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "result",
+            "description": "Минуты, страницы и тп(количественное значение)",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "date",
+            "description": "Когда было сделано DD.MM.YYYY",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BecomeBetter"
+        ]
+      }
+    },
     "/v1/main_categories": {
       "get": {
         "operationId": "BecomeBetter_MainCategories",
@@ -72,6 +130,13 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "categoryType",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -81,6 +146,9 @@
     }
   },
   "definitions": {
+    "exampleEmptyResponse": {
+      "type": "object"
+    },
     "exampleMainCategoriesMessage": {
       "type": "object",
       "properties": {

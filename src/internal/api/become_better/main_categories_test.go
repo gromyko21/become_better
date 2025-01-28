@@ -14,7 +14,7 @@ import (
 
 	database "become_better/src/db"
 	"become_better/src/internal/api/become_better/mocks"
-	"become_better/src/internal/api/models"
+	"become_better/src/internal/models"
 )
 
 func TestMainCategories(t *testing.T) {

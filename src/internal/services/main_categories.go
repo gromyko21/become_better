@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
 
-	"become_better/src/internal/api/models"
+	"become_better/src/internal/models"
 )
 
 type MainCategoriesInterface interface {
@@ -15,7 +15,7 @@ type MainCategoriesInterface interface {
 	AddCategories(ctx context.Context, pool *pgxpool.Pool, category *models.Category) (*models.Category, error)  
 }
 
-type CategoriesServiceImpl struct{
+type CategoriesServiceImpl struct {
 	models.CategoriesModelInterface
 }
 

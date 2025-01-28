@@ -5,7 +5,7 @@ import (
 
 	config "become_better/src/config"
 	gen "become_better/src/gen/become_better"
-	"become_better/src/internal/api/services"
+	"become_better/src/internal/services"
 )
 
 type MainService struct {
@@ -13,4 +13,5 @@ type MainService struct {
 	config.App
 	Ctx context.Context
 	services.MainCategoriesInterface
+	services.ProgressInterface
 }

@@ -14,7 +14,7 @@ import (
 
 	database "become_better/src/db"
 	"become_better/src/internal/api/become_better/mocks"
-	"become_better/src/internal/api/models"
+	"become_better/src/internal/models"
 )
 
 func TestAddCategories(t *testing.T) {
@@ -30,9 +30,20 @@ func TestAddCategories(t *testing.T) {
 	}{
 		{
 			name: "success",
-			mockResponse: models.Category{ID: uuidID, Name: "Category1", MainCategory: models.CategoryStudy},
+			mockResponse: models.Category{ID: uuidID, Name: "Category1", MainCategory: models.CategoryStudy, Description: "desc"},
+			category: gen.AddCategoryMessage{
+				MainCategory: models.CategoryStudy,
+				CategoryType: models.CountCategoryType,
+				Name: "Category1",
+				Description: "desc",
+			},
 			mockError: nil,
-			expectedResult: &gen.MainCategoriesMessage{Id: uuidID.String(), Name: "Category1", MainCategory: "Учеба"},
+			expectedResult: &gen.MainCategoriesMessage{
+				Id: uuidID.String(), 
+				Name: "Category1", 
+				MainCategory: "Учеба",
+				Description: "desc",
+			},
 			expectedError: false,
 		},
 		{
@@ -46,7 +57,18 @@ func TestAddCategories(t *testing.T) {
 			name: "fail main category",
 			category: gen.AddCategoryMessage{MainCategory: 8800555},
 			mockResponse: models.Category{},
-			mockError: errors.New("some error"),
+			mockError: nil,
+			expectedResult: &gen.MainCategoriesMessage{},
+			expectedError: true,
+		},
+		{
+			name: "fail category type",
+			category: gen.AddCategoryMessage{
+				MainCategory: models.CategoryStudy, 
+				CategoryType: 8800,
+			},
+			mockResponse: models.Category{},
+			mockError: nil,
 			expectedResult: &gen.MainCategoriesMessage{},
 			expectedError: true,
 		},

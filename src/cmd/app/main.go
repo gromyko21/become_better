@@ -17,8 +17,8 @@ import (
 	gen "become_better/src/gen/become_better"
 	api "become_better/src/internal/api/become_better"
 	swagerDocs "become_better/src/internal/api/docs"
-	"become_better/src/internal/api/models"
-	"become_better/src/internal/api/services"
+	"become_better/src/internal/models"
+	"become_better/src/internal/services"
 )
 
 func main() {
@@ -53,6 +53,10 @@ func runGRPc(ctx context.Context, localConfig *config.Config, app config.App) {
 		MainCategoriesInterface: &services.CategoriesServiceImpl{
 			CategoriesModelInterface: &models.CategoriesModelImpl{},
 		},
+		ProgressInterface: &services.ProgressService{
+			ProgressModelInterface: &models.CategoriesModelImpl{},
+			CategoriesModelInterface: &models.CategoriesModelImpl{},
+		},
 	})
 	reflection.Register(grpcServer)
 	logrus.Info("Service has been started")
@@ -63,29 +67,40 @@ func runGRPc(ctx context.Context, localConfig *config.Config, app config.App) {
 }
 
 func runRest(config *config.Config) {
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := gen.RegisterBecomeBetterHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%s", config.CommonConfig.Host, config.CommonConfig.GRPcPort), opts)
-	if err != nil {
-		panic(err)
+	
+	if err := gen.RegisterBecomeBetterHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%s", config.CommonConfig.Host, config.CommonConfig.GRPcPort), opts); err != nil {
+		logrus.Fatalf("Ошибка при регистрации обработчика: %v", err)
 	}
 
-	err = mux.HandlePath("GET", "/", swagerDocs.SwaggerFile)
-	if err != nil {
-		panic(err)
+	if err := mux.HandlePath("GET", "/", swagerDocs.SwaggerFile); err != nil {
+		logrus.Fatalf("Ошибка при обработке пути /: %v", err)
 	}
 
-	err = mux.HandlePath("GET", "/swagger.json", swagerDocs.SwaggerPage)
-	if err != nil {
-		panic(err)
+	if err := mux.HandlePath("GET", "/swagger.json", swagerDocs.SwaggerPage); err != nil {
+		logrus.Fatalf("Ошибка при обработке пути /swagger.json: %v", err)
 	}
 
-	logrus.Info(fmt.Sprintf("Server listening at %s", fmt.Sprintf("%s:%s", config.CommonConfig.Host, config.CommonConfig.HTTPport)))
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", config.CommonConfig.HTTPport), mux); err != nil {
-		panic(err)
+	addr := fmt.Sprintf(":%s", config.CommonConfig.HTTPport)
+	logrus.Infof("REST сервер запущен на http://%s%s", config.CommonConfig.Host, addr)
+
+	server := &http.Server{
+		Addr:    addr,
+		Handler: mux,
+	}
+
+	go func() {
+		<-ctx.Done()
+		if err := server.Shutdown(context.Background()); err != nil {
+			logrus.Errorf("Ошибка при остановке сервера: %v", err)
+		}
+	}()
+
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		logrus.Fatalf("Ошибка при запуске сервера: %v", err)
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	gen "become_better/src/gen/become_better"
-	"become_better/src/internal/api/models"
+	"become_better/src/internal/models"
 )
 
 func (s *MainService) MainCategories(ctx context.Context, req *gen.MainCategoriesRequest) (*gen.MainCategoriesResponse, error) {
