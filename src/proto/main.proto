@@ -20,7 +20,12 @@ service BecomeBetter {
   }
   rpc FillProgress (FillProgressRequest) returns (EmptyResponse) {
     option (google.api.http) = {
-      post: "/v1/fill_progress"
+      post: "/progress"
+    };
+  }
+  rpc DeleteProgress (DeleteProgressRequest) returns (EmptyResponse) {
+    option (google.api.http) = {
+      delete: "/v1/progress"
     };
   }
 }
@@ -45,6 +50,11 @@ message AddCategoryMessage {
   string description = 2;
   int32 main_category = 3;
   int32 category_type = 4;
+}
+
+message DeleteProgressRequest {
+  string progress_id = 1; // uuid прогресса
+  string user_id = 2;
 }
 
 message FillProgressRequest {

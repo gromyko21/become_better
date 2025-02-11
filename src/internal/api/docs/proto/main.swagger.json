@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/fill_progress": {
+    "/progress": {
       "post": {
         "operationId": "BecomeBetter_FillProgress",
         "responses": {
@@ -137,6 +137,43 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          }
+        ],
+        "tags": [
+          "BecomeBetter"
+        ]
+      }
+    },
+    "/v1/progress": {
+      "delete": {
+        "operationId": "BecomeBetter_DeleteProgress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/exampleEmptyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "progressId",
+            "description": "uuid прогресса",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [

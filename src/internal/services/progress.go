@@ -14,6 +14,7 @@ import (
 
 type ProgressInterface interface {
 	FillProgress(ctx context.Context, pool *pgxpool.Pool, progress *models.Progress) (error)
+	DeleteProgress(ctx context.Context, pool *pgxpool.Pool, progressID, userID uuid.UUID) (error)
 }
 
 type ProgressService struct {
@@ -46,6 +47,16 @@ func (p *ProgressService) FillProgress(ctx context.Context, pool *pgxpool.Pool, 
 		logrus.Error(err)
 		
 		return fmt.Errorf("не удалось создать новый прогресс: %v", err)
+	}
+
+	return nil
+}
+
+func (p *ProgressService) DeleteProgress(ctx context.Context, pool *pgxpool.Pool, progressID, userID uuid.UUID) (error) {
+
+	err := p.ProgressModelInterface.DeleteProgress(ctx, pool, progressID, userID)
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -13,7 +13,7 @@ import (
 	gen "become_better/src/gen/become_better"
 
 	database "become_better/src/db"
-	"become_better/src/internal/api/become_better/mocks"
+	"become_better/src/internal/services/mocks"
 	"become_better/src/internal/models"
 )
 

@@ -105,3 +105,104 @@ func TestFillProgress(t *testing.T) {
 		})
 	}
 }
+
+func Test_validateProgressDate(t *testing.T) {
+	tests := []struct {
+		name        string
+		inputDate   string
+		expectError bool
+	}{
+		{
+			name:        "success",
+			inputDate:   time.Now().Format("02.01.2006"),
+			expectError: false,
+		},
+		{
+			name:        "Error future date",
+			inputDate:   time.Now().AddDate(0, 0, 1).Format("02.01.2006"),
+			expectError: true,
+		},
+		{
+			name:        "error incorrect date",
+			inputDate:   "2024-03-20",
+			expectError: true,
+		},
+		{
+			name:        "error empty date",
+			inputDate:   "",
+			expectError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateProgressDate(tt.inputDate)
+			if (err != nil) != tt.expectError {
+				t.Errorf("validateProgressDate() error = %v, expectError %v", err, tt.expectError)
+			}
+		})
+	}
+}
+
+func TestDeleteProgress(t *testing.T) {
+	connString := ""
+	pool, err := pgxpool.New(context.Background(), connString)
+	if err != nil {
+		t.Fatalf("Unable to create connection pool: %v", err)
+	}
+	defer pool.Close()
+
+	progressID := uuid.New()
+	userID := uuid.New()
+
+	tests := []struct {
+		name                          string
+		progressID                    uuid.UUID
+		userID                        uuid.UUID
+		mockProgressModelResponseError error
+		expectedError                 bool
+	}{
+		{
+			name:                          "success",
+			progressID:                    progressID,
+			userID:                        userID,
+			mockProgressModelResponseError: nil,
+			expectedError:                 false,
+		},
+		{
+			name:                          "error",
+			progressID:                    progressID,
+			userID:                        userID,
+			mockProgressModelResponseError: fmt.Errorf("some error"),
+			expectedError:                 true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+
+			mockProgressModelInterface := new(mocks.ProgressModelInterface)
+			mockProgressModelInterface.On("DeleteProgress", mock.Anything, mock.Anything, tt.progressID, tt.userID).
+				Return(tt.mockProgressModelResponseError)
+
+			progressService := ProgressService{
+				ProgressModelInterface: mockProgressModelInterface,
+			}
+
+			// Вызов метода
+			err := progressService.DeleteProgress(ctx, pool, tt.progressID, tt.userID)
+
+			// Проверка результата
+			if tt.expectedError {
+				assert.Error(t, err)
+				assert.Equal(t, tt.mockProgressModelResponseError, err)
+			} else {
+				assert.NoError(t, err)
+				mockProgressModelInterface.AssertExpectations(t)
+			}
+		})
+	}
+}
