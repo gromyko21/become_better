@@ -13,8 +13,8 @@ import (
 	gen "become_better/src/gen/become_better"
 
 	database "become_better/src/db"
-	"become_better/src/internal/services/mocks"
 	"become_better/src/internal/models"
+	"become_better/src/internal/services/mocks"
 )
 
 func TestMainCategories(t *testing.T) {
@@ -41,27 +41,26 @@ func TestMainCategories(t *testing.T) {
 			expectedError: false,
 		},
 		{
-			name: "fail",
-			mockResponse: []models.Category{},
-			mockError: errors.New("some error"),
+			name:           "fail",
+			mockResponse:   []models.Category{},
+			mockError:      errors.New("some error"),
 			expectedResult: &gen.MainCategoriesResponse{},
-			expectedError: true,
+			expectedError:  true,
 		},
 	}
-
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			
+
 			mockCategoriesService := new(mocks.MainCategoriesInterface)
 			mockCategoriesService.On("MainCategories", mock.Anything, mock.Anything, mock.Anything).
 				Return(tt.mockResponse, tt.mockError)
 
 			mainService := &MainService{
 				MainCategoriesInterface: mockCategoriesService,
-				Ctx: context.Background(),
-				App: config.App{Postgres: &database.Postgres{}},
+				Ctx:                     context.Background(),
+				App:                     config.App{Postgres: &database.Postgres{}},
 			}
 
 			// Вызов метода
@@ -85,17 +84,17 @@ func TestCategoriesToProto(t *testing.T) {
 	id := uuid.New()
 	in := []models.Category{
 		{
-			ID: id,
+			ID:           id,
 			MainCategory: models.CategoryStudy,
-			Description: "desc",
-			Name: "test",
+			Description:  "desc",
+			Name:         "test",
 		},
 	}
 	out := []*gen.MainCategoriesMessage{
 		{
-			Id: id.String(),
-			Name: "test",
-			Description: "desc",
+			Id:           id.String(),
+			Name:         "test",
+			Description:  "desc",
 			MainCategory: "Учеба",
 		},
 	}

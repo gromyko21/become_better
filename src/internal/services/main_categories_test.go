@@ -49,7 +49,7 @@ func TestMainCategories(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			
+
 			ctx := context.Background()
 
 			mockCategoriesModelInterface := new(mocks.CategoriesModelInterface)
@@ -103,21 +103,21 @@ func TestAddCategories(t *testing.T) {
 			expectedError:  true,
 		},
 		{
-			name:           "success",
-			mockResponse:   models.Category{
-				ID: id,
-				Name: "name",
-				Description: "desc",
+			name: "success",
+			mockResponse: models.Category{
+				ID:           id,
+				Name:         "name",
+				Description:  "desc",
 				MainCategory: 1,
 			},
-			mockError:      nil,
+			mockError: nil,
 			expectedResult: &models.Category{
-				ID: id,
-				Name: "name",
-				Description: "desc",
+				ID:           id,
+				Name:         "name",
+				Description:  "desc",
 				MainCategory: 1,
 			},
-			expectedError:  false,
+			expectedError: false,
 		},
 	}
 

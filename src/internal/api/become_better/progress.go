@@ -76,20 +76,20 @@ func (s *MainService) GetProgress(ctx context.Context, getProgress *gen.GetProgr
 
 	filter := models.ProgressFilter{
 		CategoryID: categoryID,
-		UserID: &userID,
-		DateFrom: getProgress.DateFrom,
-		DateTo: getProgress.DateTo,
-		Page: getProgress.Page,
-		Limit: getProgress.Limit,
+		UserID:     &userID,
+		DateFrom:   getProgress.DateFrom,
+		DateTo:     getProgress.DateTo,
+		Page:       getProgress.Page,
+		Limit:      getProgress.Limit,
 	}
 	progress, countRows, err := s.ProgressInterface.GetProgress(ctx, s.App.Postgres.Pool, filter)
 	if err != nil {
-		return nil, fmt.Errorf("error when ProgressInterface.GetProgress: %v",  err)
+		return nil, fmt.Errorf("error when ProgressInterface.GetProgress: %v", err)
 	}
 
 	response, err := services.ProgressToGetProgressResponse(progress, filter, countRows)
 	if err != nil {
-		return nil, fmt.Errorf("somethink went wrong: %v",  err)
-	}	
+		return nil, fmt.Errorf("somethink went wrong: %v", err)
+	}
 	return response, nil
 }

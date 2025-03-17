@@ -12,7 +12,7 @@ import (
 
 type MainCategoriesInterface interface {
 	MainCategories(ctx context.Context, pool *pgxpool.Pool) ([]models.Category, error)
-	AddCategories(ctx context.Context, pool *pgxpool.Pool, category *models.Category) (*models.Category, error)  
+	AddCategories(ctx context.Context, pool *pgxpool.Pool, category *models.Category) (*models.Category, error)
 }
 
 type CategoriesServiceImpl struct {
@@ -29,7 +29,7 @@ func (c *CategoriesServiceImpl) MainCategories(ctx context.Context, pool *pgxpoo
 	return categories, nil
 }
 
-func (c *CategoriesServiceImpl) AddCategories(ctx context.Context, pool *pgxpool.Pool, category *models.Category) (*models.Category, error)  {
+func (c *CategoriesServiceImpl) AddCategories(ctx context.Context, pool *pgxpool.Pool, category *models.Category) (*models.Category, error) {
 
 	category.ID = uuid.New()
 	category, err := c.CategoriesModelInterface.AddCategory(ctx, pool, category)

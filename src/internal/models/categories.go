@@ -16,7 +16,7 @@ type CategoriesModelInterface interface {
 	CategoryTypeByID(ctx context.Context, pool *pgxpool.Pool, categoryID uuid.UUID) (int32, error)
 }
 
-type CategoriesModelImpl struct {}
+type CategoriesModelImpl struct{}
 
 func (c *CategoriesModelImpl) GetCategories(ctx context.Context, pool *pgxpool.Pool) ([]Category, error) {
 	var categories []Category
@@ -29,7 +29,7 @@ func (c *CategoriesModelImpl) GetCategories(ctx context.Context, pool *pgxpool.P
 		logrus.Error(err)
 		return nil, err
 	}
-	
+
 	err = pgxscan.Select(ctx, pool, &categories, sql, args...)
 	if err != nil {
 		logrus.Error(err)

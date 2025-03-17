@@ -94,16 +94,16 @@ func TestDeleteProgress(t *testing.T) {
 	uuidID := uuid.New()
 
 	tests := []*struct {
-		name          string
-		deleteProgress     gen.DeleteProgressRequest
-		mockResponse  error
-		expectedError bool
+		name           string
+		deleteProgress gen.DeleteProgressRequest
+		mockResponse   error
+		expectedError  bool
 	}{
 		{
 			name: "success",
 			deleteProgress: gen.DeleteProgressRequest{
 				ProgressId: uuidID.String(),
-				UserId: uuidID.String(),
+				UserId:     uuidID.String(),
 			},
 			mockResponse:  nil,
 			expectedError: false,
@@ -111,8 +111,8 @@ func TestDeleteProgress(t *testing.T) {
 		{
 			name: "error UserID",
 			deleteProgress: gen.DeleteProgressRequest{
-				UserId:      "",
-				ProgressId:      uuidID.String(),
+				UserId:     "",
+				ProgressId: uuidID.String(),
 			},
 			mockResponse:  fmt.Errorf(""),
 			expectedError: true,
@@ -120,8 +120,8 @@ func TestDeleteProgress(t *testing.T) {
 		{
 			name: "error ProgressId",
 			deleteProgress: gen.DeleteProgressRequest{
-				UserId:      uuidID.String(),
-				ProgressId:  "",
+				UserId:     uuidID.String(),
+				ProgressId: "",
 			},
 			mockResponse:  fmt.Errorf(""),
 			expectedError: true,

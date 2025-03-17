@@ -54,7 +54,7 @@ func runGRPc(ctx context.Context, localConfig *config.Config, app config.App) {
 			CategoriesModelInterface: &models.CategoriesModelImpl{},
 		},
 		ProgressInterface: &services.ProgressService{
-			ProgressModelInterface: &models.CategoriesModelImpl{},
+			ProgressModelInterface:   &models.CategoriesModelImpl{},
 			CategoriesModelInterface: &models.CategoriesModelImpl{},
 		},
 	})
@@ -72,7 +72,7 @@ func runRest(config *config.Config) {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	
+
 	if err := gen.RegisterBecomeBetterHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%s", config.CommonConfig.Host, config.CommonConfig.GRPcPort), opts); err != nil {
 		logrus.Fatalf("Ошибка при регистрации обработчика: %v", err)
 	}

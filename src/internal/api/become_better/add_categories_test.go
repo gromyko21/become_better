@@ -19,7 +19,7 @@ import (
 
 func TestAddCategories(t *testing.T) {
 	uuidID := uuid.New()
-	
+
 	tests := []*struct {
 		name           string
 		category       gen.AddCategoryMessage
@@ -29,51 +29,51 @@ func TestAddCategories(t *testing.T) {
 		expectedError  bool
 	}{
 		{
-			name: "success",
+			name:         "success",
 			mockResponse: models.Category{ID: uuidID, Name: "Category1", MainCategory: models.CategoryStudy, Description: "desc"},
 			category: gen.AddCategoryMessage{
 				MainCategory: models.CategoryStudy,
 				CategoryType: models.CountCategoryType,
-				Name: "Category1",
-				Description: "desc",
+				Name:         "Category1",
+				Description:  "desc",
 			},
 			mockError: nil,
 			expectedResult: &gen.MainCategoriesMessage{
-				Id: uuidID.String(), 
-				Name: "Category1", 
+				Id:           uuidID.String(),
+				Name:         "Category1",
 				MainCategory: "Учеба",
-				Description: "desc",
+				Description:  "desc",
 			},
 			expectedError: false,
 		},
 		{
-			name: "fail",
-			mockResponse: models.Category{},
-			mockError: errors.New("some error"),
+			name:           "fail",
+			mockResponse:   models.Category{},
+			mockError:      errors.New("some error"),
 			expectedResult: &gen.MainCategoriesMessage{},
-			expectedError: true,
+			expectedError:  true,
 		},
 		{
-			name: "fail main category",
-			category: gen.AddCategoryMessage{MainCategory: 8800555},
-			mockResponse: models.Category{},
-			mockError: nil,
+			name:           "fail main category",
+			category:       gen.AddCategoryMessage{MainCategory: 8800555},
+			mockResponse:   models.Category{},
+			mockError:      nil,
 			expectedResult: &gen.MainCategoriesMessage{},
-			expectedError: true,
+			expectedError:  true,
 		},
 		{
 			name: "fail category type",
 			category: gen.AddCategoryMessage{
-				MainCategory: models.CategoryStudy, 
+				MainCategory: models.CategoryStudy,
 				CategoryType: 8800,
 			},
-			mockResponse: models.Category{},
-			mockError: nil,
+			mockResponse:   models.Category{},
+			mockError:      nil,
 			expectedResult: &gen.MainCategoriesMessage{},
-			expectedError: true,
+			expectedError:  true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
@@ -81,27 +81,27 @@ func TestAddCategories(t *testing.T) {
 			mockCategoriesService := new(mocks.MainCategoriesInterface)
 			mockCategoriesService.On("AddCategories", mock.Anything, mock.Anything, mock.Anything).
 				Return(&tt.mockResponse, tt.mockError)
-	
+
 			mainService := &MainService{
 				MainCategoriesInterface: mockCategoriesService,
-				Ctx: context.Background(),
-				App: config.App{Postgres: &database.Postgres{}},
+				Ctx:                     context.Background(),
+				App:                     config.App{Postgres: &database.Postgres{}},
 			}
-	
+
 			// Вызов метода
 			res, err := mainService.AddCategories(context.Background(), &tt.category)
-	
+
 			// Проверка результата
 			if tt.expectedError {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expectedResult, res)
-	
+
 				// Проверяем вызов моков
 				mockCategoriesService.AssertExpectations(t)
 			}
 		})
 	}
-	
+
 }

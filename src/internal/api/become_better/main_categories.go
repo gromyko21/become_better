@@ -22,9 +22,9 @@ func CategoriesToProto(categories []models.Category) []*gen.MainCategoriesMessag
 	for _, category := range categories {
 		response = append(response,
 			&gen.MainCategoriesMessage{
-				Id:          category.ID.String(),
-				Name:        category.Name,
-				Description: category.Description,
+				Id:           category.ID.String(),
+				Name:         category.Name,
+				Description:  category.Description,
 				MainCategory: models.MainCategoriesMap[category.MainCategory],
 			},
 		)
