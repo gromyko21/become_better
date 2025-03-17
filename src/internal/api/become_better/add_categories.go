@@ -17,6 +17,7 @@ func (s *MainService) AddCategories(ctx context.Context, newCategory *gen.AddCat
 		return nil, fmt.Errorf("category with such ID - %v doesn't exist", newCategory.MainCategory)
 	}
 
+	// TODO: разобраться с неймингом. Почему тип прогресса определяем по типу категории?
 	_, ok = models.ProgressTypesMap[newCategory.CategoryType]
 	if !ok {
 		return nil, fmt.Errorf("category type with such ID - %v doesn't exist", newCategory.CategoryType)

@@ -12,6 +12,7 @@ import (
 	"become_better/src/config"
 	database "become_better/src/db"
 	gen "become_better/src/gen/become_better"
+	"become_better/src/internal/models"
 	"become_better/src/internal/services/mocks"
 )
 
@@ -145,6 +146,79 @@ func TestDeleteProgress(t *testing.T) {
 
 			// Проверка результата
 			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				mockProgressService.AssertExpectations(t)
+			}
+		})
+	}
+}
+
+func TestGetProgress(t *testing.T) {
+	uuidID := uuid.New()
+
+	tests := []*struct {
+		name         string
+		getProgress  gen.GetProgressRequest
+		mockResponse []*models.Progress
+		mockCount    int32
+		mockError    error
+		expectedErr  bool
+	}{
+		{
+			name: "success",
+			getProgress: gen.GetProgressRequest{
+				CategoryId: uuidID.String(),
+				UserId:     uuidID.String(),
+				Page:       1,
+				Limit:      10,
+			},
+			mockResponse: []*models.Progress{},
+			mockCount:    0,
+			mockError:    nil,
+			expectedErr:  false,
+		},
+		{
+			name: "invalid UserID",
+			getProgress: gen.GetProgressRequest{
+				CategoryId: uuidID.String(),
+				UserId:     "invalid-uuid",
+			},
+			mockResponse: nil,
+			mockCount:    0,
+			mockError:    fmt.Errorf("can't define user_id"),
+			expectedErr:  true,
+		},
+		{
+			name: "invalid CategoryID",
+			getProgress: gen.GetProgressRequest{
+				CategoryId: "invalid-uuid",
+				UserId:     uuidID.String(),
+			},
+			mockResponse: nil,
+			mockCount:    0,
+			mockError:    fmt.Errorf("can't define categoryID"),
+			expectedErr:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			mockProgressService := new(mocks.ProgressInterface)
+			mockProgressService.On("GetProgress", mock.Anything, mock.Anything, mock.Anything).
+				Return(tt.mockResponse, tt.mockCount, tt.mockError)
+
+			mainService := &MainService{
+				ProgressInterface: mockProgressService,
+				Ctx:               context.Background(),
+				App:               config.App{Postgres: &database.Postgres{}},
+			}
+
+			_, err := mainService.GetProgress(context.Background(), &tt.getProgress)
+
+			if tt.expectedErr {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)

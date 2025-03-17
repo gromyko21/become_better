@@ -1,6 +1,10 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Category struct {
 	ID uuid.UUID `db:"id"`
@@ -17,5 +21,5 @@ type Progress struct {
 	ProgressType int32 `db:"progress_type"`
 	Result int32 `db:"result_int"`
 	Description string `db:"result_description"`
-	Date string `db:"date"`
+	Date time.Time `db:"date"`
 }

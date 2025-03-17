@@ -145,6 +145,69 @@
       }
     },
     "/v1/progress": {
+      "get": {
+        "operationId": "BecomeBetter_GetProgress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/exampleGetProgressResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "categoryId",
+            "description": "uuid категории",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dateFrom",
+            "description": "Когда было сделано DD.MM.YYYY",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dateTo",
+            "description": "Когда было сделано DD.MM.YYYY",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "BecomeBetter"
+        ]
+      },
       "delete": {
         "operationId": "BecomeBetter_DeleteProgress",
         "responses": {
@@ -186,6 +249,30 @@
     "exampleEmptyResponse": {
       "type": "object"
     },
+    "exampleGetProgressResponse": {
+      "type": "object",
+      "properties": {
+        "progress": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/exampleProgress"
+          }
+        },
+        "countPages": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "exampleMainCategoriesMessage": {
       "type": "object",
       "properties": {
@@ -212,6 +299,36 @@
             "type": "object",
             "$ref": "#/definitions/exampleMainCategoriesMessage"
           }
+        }
+      }
+    },
+    "exampleProgress": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "string",
+          "title": "uuid"
+        },
+        "categoryId": {
+          "type": "string",
+          "title": "uuid категории"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "title": "Когда было сделано DD.MM.YYYY"
+        },
+        "progressType": {
+          "type": "string"
+        },
+        "resultInt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "resultDescription": {
+          "type": "string"
         }
       }
     },

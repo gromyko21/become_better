@@ -6,6 +6,7 @@ import (
 
 	gen "become_better/src/gen/become_better"
 	"become_better/src/internal/models"
+	"become_better/src/internal/services"
 
 	"github.com/google/uuid"
 )
@@ -26,7 +27,8 @@ func (s *MainService) FillProgress(ctx context.Context, fillData *gen.FillProgre
 		UserID:      userID,
 		Description: fillData.Description,
 		Result:      fillData.Result,
-		Date:        fillData.Date,
+		// TODO: починить
+		// Date:        fillData.Date,
 	}
 
 	err = s.ProgressInterface.FillProgress(ctx, s.App.Postgres.Pool, &progress)
@@ -54,4 +56,40 @@ func (s *MainService) DeleteProgress(ctx context.Context, deleteProgress *gen.De
 	}
 
 	return &gen.EmptyResponse{}, nil
+}
+
+func (s *MainService) GetProgress(ctx context.Context, getProgress *gen.GetProgressRequest) (*gen.GetProgressResponse, error) {
+
+	var categoryID *uuid.UUID
+	if getProgress.CategoryId != "" {
+		parsedCategoryID, err := uuid.Parse(getProgress.CategoryId)
+		if err != nil {
+			return nil, fmt.Errorf("can't define categoryID(%s), as uuid: %v", getProgress.CategoryId, err)
+		}
+		categoryID = &parsedCategoryID
+	}
+
+	userID, err := uuid.Parse(getProgress.UserId)
+	if err != nil {
+		return nil, fmt.Errorf("can't define  user_id(%s), as uuid: %v", getProgress.UserId, err)
+	}
+
+	filter := models.ProgressFilter{
+		CategoryID: categoryID,
+		UserID: &userID,
+		DateFrom: getProgress.DateFrom,
+		DateTo: getProgress.DateTo,
+		Page: getProgress.Page,
+		Limit: getProgress.Limit,
+	}
+	progress, countRows, err := s.ProgressInterface.GetProgress(ctx, s.App.Postgres.Pool, filter)
+	if err != nil {
+		return nil, fmt.Errorf("error when ProgressInterface.GetProgress: %v",  err)
+	}
+
+	response, err := services.ProgressToGetProgressResponse(progress, filter, countRows)
+	if err != nil {
+		return nil, fmt.Errorf("somethink went wrong: %v",  err)
+	}	
+	return response, nil
 }

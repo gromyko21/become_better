@@ -28,6 +28,11 @@ service BecomeBetter {
       delete: "/v1/progress"
     };
   }
+  rpc GetProgress (GetProgressRequest) returns (GetProgressResponse) {
+    option (google.api.http) = {
+      get: "/v1/progress"
+    };
+  }
 }
 
 message MainCategoriesRequest {}
@@ -63,4 +68,30 @@ message FillProgressRequest {
   string user_id = 3;
   int32 result = 4; // Минуты, страницы и тп(количественное значение)
   string date = 5; // Когда было сделано DD.MM.YYYY
+}
+
+message GetProgressRequest {
+  string category_id = 1; // uuid категории
+  string user_id = 2;
+  string dateFrom = 3; // Когда было сделано DD.MM.YYYY
+  string dateTo = 4; // Когда было сделано DD.MM.YYYY
+  int32 page = 5;
+  int32 limit = 6;
+}
+
+message GetProgressResponse {
+  repeated Progress progress = 1;
+  int32 count_pages = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message Progress {
+  string ID = 1; // uuid
+  string category_id = 2; // uuid категории
+  string user_id = 3;
+  string date = 4; // Когда было сделано DD.MM.YYYY
+  string progress_type = 5;
+  int32 result_int = 6;
+  string result_description = 7;
 }

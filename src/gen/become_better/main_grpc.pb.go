@@ -23,6 +23,7 @@ const (
 	BecomeBetter_AddCategories_FullMethodName  = "/example.BecomeBetter/AddCategories"
 	BecomeBetter_FillProgress_FullMethodName   = "/example.BecomeBetter/FillProgress"
 	BecomeBetter_DeleteProgress_FullMethodName = "/example.BecomeBetter/DeleteProgress"
+	BecomeBetter_GetProgress_FullMethodName    = "/example.BecomeBetter/GetProgress"
 )
 
 // BecomeBetterClient is the client API for BecomeBetter service.
@@ -33,6 +34,7 @@ type BecomeBetterClient interface {
 	AddCategories(ctx context.Context, in *AddCategoryMessage, opts ...grpc.CallOption) (*MainCategoriesMessage, error)
 	FillProgress(ctx context.Context, in *FillProgressRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
 	DeleteProgress(ctx context.Context, in *DeleteProgressRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
+	GetProgress(ctx context.Context, in *GetProgressRequest, opts ...grpc.CallOption) (*GetProgressResponse, error)
 }
 
 type becomeBetterClient struct {
@@ -83,6 +85,16 @@ func (c *becomeBetterClient) DeleteProgress(ctx context.Context, in *DeleteProgr
 	return out, nil
 }
 
+func (c *becomeBetterClient) GetProgress(ctx context.Context, in *GetProgressRequest, opts ...grpc.CallOption) (*GetProgressResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProgressResponse)
+	err := c.cc.Invoke(ctx, BecomeBetter_GetProgress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BecomeBetterServer is the server API for BecomeBetter service.
 // All implementations must embed UnimplementedBecomeBetterServer
 // for forward compatibility.
@@ -91,6 +103,7 @@ type BecomeBetterServer interface {
 	AddCategories(context.Context, *AddCategoryMessage) (*MainCategoriesMessage, error)
 	FillProgress(context.Context, *FillProgressRequest) (*EmptyResponse, error)
 	DeleteProgress(context.Context, *DeleteProgressRequest) (*EmptyResponse, error)
+	GetProgress(context.Context, *GetProgressRequest) (*GetProgressResponse, error)
 	mustEmbedUnimplementedBecomeBetterServer()
 }
 
@@ -112,6 +125,9 @@ func (UnimplementedBecomeBetterServer) FillProgress(context.Context, *FillProgre
 }
 func (UnimplementedBecomeBetterServer) DeleteProgress(context.Context, *DeleteProgressRequest) (*EmptyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteProgress not implemented")
+}
+func (UnimplementedBecomeBetterServer) GetProgress(context.Context, *GetProgressRequest) (*GetProgressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProgress not implemented")
 }
 func (UnimplementedBecomeBetterServer) mustEmbedUnimplementedBecomeBetterServer() {}
 func (UnimplementedBecomeBetterServer) testEmbeddedByValue()                      {}
@@ -206,6 +222,24 @@ func _BecomeBetter_DeleteProgress_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BecomeBetter_GetProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProgressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BecomeBetterServer).GetProgress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BecomeBetter_GetProgress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BecomeBetterServer).GetProgress(ctx, req.(*GetProgressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BecomeBetter_ServiceDesc is the grpc.ServiceDesc for BecomeBetter service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +262,10 @@ var BecomeBetter_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteProgress",
 			Handler:    _BecomeBetter_DeleteProgress_Handler,
+		},
+		{
+			MethodName: "GetProgress",
+			Handler:    _BecomeBetter_GetProgress_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
