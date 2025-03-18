@@ -19,7 +19,7 @@ type ProgressModelInterface struct {
 }
 
 // AddProgress provides a mock function with given fields: ctx, pool, progress
-func (_m *ProgressModelInterface) AddProgress(ctx context.Context, pool *pgxpool.Pool, progress *models.Progress) error {
+func (_m *ProgressModelInterface) AddProgress(ctx context.Context, pool *pgxpool.Pool, progress *models.FillProgress) error {
 	ret := _m.Called(ctx, pool, progress)
 
 	if len(ret) == 0 {
@@ -27,7 +27,7 @@ func (_m *ProgressModelInterface) AddProgress(ctx context.Context, pool *pgxpool
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool, *models.Progress) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *pgxpool.Pool, *models.FillProgress) error); ok {
 		r0 = rf(ctx, pool, progress)
 	} else {
 		r0 = ret.Error(0)

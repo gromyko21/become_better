@@ -16,7 +16,7 @@ import (
 )
 
 type ProgressInterface interface {
-	FillProgress(ctx context.Context, pool *pgxpool.Pool, progress *models.Progress) error
+	FillProgress(ctx context.Context, pool *pgxpool.Pool, progress *models.FillProgress) error
 	DeleteProgress(ctx context.Context, pool *pgxpool.Pool, progressID, userID uuid.UUID) error
 	GetProgress(ctx context.Context, pool *pgxpool.Pool, filter models.ProgressFilter) ([]*models.Progress, int32, error)
 }
@@ -26,13 +26,12 @@ type ProgressService struct {
 	models.CategoriesModelInterface
 }
 
-func (p *ProgressService) FillProgress(ctx context.Context, pool *pgxpool.Pool, progress *models.Progress) error {
-	// TODO: починить
-	// err := validateProgressDate(progress.Date)
-	// if err != nil {
-	// 	logrus.Error(err)
-	// 	return err
-	// }
+func (p *ProgressService) FillProgress(ctx context.Context, pool *pgxpool.Pool, progress *models.FillProgress) error {
+	err := validateProgressDate(progress.Date)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
 	categoryType, err := p.CategoriesModelInterface.CategoryTypeByID(ctx, pool, progress.CategoryID)
 
 	if err != nil {
@@ -107,7 +106,6 @@ func ProgressToGetProgressResponse(
 	genProgress := []*gen.Progress{}
 	for _, v := range progress {
 		_, ok := models.ProgressTypesMap[v.ProgressType]
-		logrus.Info("ProgressToGetProgressResponse", v.ProgressType, models.ProgressTypesMap)
 		if !ok {
 			return nil, fmt.Errorf("category type with such ID - %v doesn't exist", v.ProgressType)
 		}

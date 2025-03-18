@@ -23,3 +23,13 @@ type Progress struct {
 	Description  string    `db:"result_description"`
 	Date         time.Time `db:"date"`
 }
+
+type FillProgress struct {
+	ID           uuid.UUID `db:"id"`
+	UserID       uuid.UUID `db:"user_id"`
+	CategoryID   uuid.UUID `db:"category_id"`
+	ProgressType int32     `db:"progress_type"`
+	Result       int32     `db:"result_int"`
+	Description  string    `db:"result_description"`
+	Date         string    `db:"date"`
+}

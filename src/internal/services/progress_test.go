@@ -20,7 +20,6 @@ import (
 )
 
 func TestFillProgress(t *testing.T) {
-	// TODO: починить тест
 	connString := ""
 	pool, err := pgxpool.New(context.Background(), connString)
 	if err != nil {
@@ -28,12 +27,12 @@ func TestFillProgress(t *testing.T) {
 	}
 	defer pool.Close()
 
-	// now := time.Now()
-	// ID := uuid.New()
+	now := time.Now()
+	ID := uuid.New()
 
 	tests := []struct {
 		name                           string
-		progress                       models.Progress
+		progress                       models.FillProgress
 		mockCategoriesResponseError    error
 		mockCategoriesResponse         int32
 		mockProgressModelResponseError error
@@ -41,30 +40,30 @@ func TestFillProgress(t *testing.T) {
 		expectedError                  bool
 	}{
 		{
-			name: "fail in validateProgressDate",
-			// progress: models.Progress{Date: "fff"},
+			name:                        "fail in validateProgressDate",
+			progress:                    models.FillProgress{Date: "fff"},
 			mockCategoriesResponseError: nil,
 			expectedResult:              fmt.Errorf("не удалось определить дату в формате DD.MM.YYYY(%s): parsing time \"fff\" as \"02.01.2006\": cannot parse \"fff\" as \"02\"", "fff"),
 			expectedError:               true,
 		},
 		{
-			name: "fail in CategoryByID",
-			// progress: models.Progress{Date: fmt.Sprintf("%02d.%02d.%d", now.Day(), now.Month(), now.Year())},
+			name:                        "fail in CategoryByID",
+			progress:                    models.FillProgress{Date: fmt.Sprintf("%02d.%02d.%d", now.Day(), now.Month(), now.Year())},
 			mockCategoriesResponseError: fmt.Errorf("some error"),
 			expectedResult:              fmt.Errorf("some error"),
 			expectedError:               true,
 		},
 		{
-			name: "fail in ID category",
-			// progress: models.Progress{Date: fmt.Sprintf("%02d.%02d.%d", now.Day(), now.Month(), now.Year())},
+			name:                           "fail in ID category",
+			progress:                       models.FillProgress{Date: fmt.Sprintf("%02d.%02d.%d", now.Day(), now.Month(), now.Year())},
 			mockCategoriesResponseError:    nil,
 			mockProgressModelResponseError: nil,
 			expectedResult:                 fmt.Errorf("category with ID 00000000-0000-0000-0000-000000000000 doesn't exists"),
 			expectedError:                  true,
 		},
 		{
-			name: "success",
-			// progress: models.Progress{Date: fmt.Sprintf("%02d.%02d.%d", now.Day(), now.Month(), now.Year()), CategoryID: ID},
+			name:                           "success",
+			progress:                       models.FillProgress{Date: fmt.Sprintf("%02d.%02d.%d", now.Day(), now.Month(), now.Year()), CategoryID: ID},
 			mockCategoriesResponseError:    nil,
 			mockCategoriesResponse:         models.MinuteCategoryType,
 			mockProgressModelResponseError: nil,

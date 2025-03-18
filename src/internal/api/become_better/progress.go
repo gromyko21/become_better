@@ -22,13 +22,12 @@ func (s *MainService) FillProgress(ctx context.Context, fillData *gen.FillProgre
 		return nil, fmt.Errorf("не удалось определить category_id(%s), как uuid: %v", fillData.UserId, err)
 	}
 
-	progress := models.Progress{
+	progress := models.FillProgress{
 		CategoryID:  categoryID,
 		UserID:      userID,
 		Description: fillData.Description,
 		Result:      fillData.Result,
-		// TODO: починить
-		// Date:        fillData.Date,
+		Date:        fillData.Date,
 	}
 
 	err = s.ProgressInterface.FillProgress(ctx, s.App.Postgres.Pool, &progress)

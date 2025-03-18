@@ -10,7 +10,7 @@ import (
 )
 
 type ProgressModelInterface interface {
-	AddProgress(ctx context.Context, pool *pgxpool.Pool, progress *Progress) error
+	AddProgress(ctx context.Context, pool *pgxpool.Pool, progress *FillProgress) error
 	DeleteProgress(ctx context.Context, pool *pgxpool.Pool, progressID, userID uuid.UUID) error
 	GetProgress(ctx context.Context, pool *pgxpool.Pool, filter ProgressFilter) ([]*Progress, int32, error)
 }
@@ -26,7 +26,7 @@ type ProgressFilter struct {
 
 type ProgressModelImpl struct{}
 
-func (c *CategoriesModelImpl) AddProgress(ctx context.Context, pool *pgxpool.Pool, progress *Progress) error {
+func (c *CategoriesModelImpl) AddProgress(ctx context.Context, pool *pgxpool.Pool, progress *FillProgress) error {
 
 	query := sq.
 		Insert("progress").
