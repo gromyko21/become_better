@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -13,6 +14,7 @@ type ProgressModelInterface interface {
 	AddProgress(ctx context.Context, pool *pgxpool.Pool, progress *FillProgress) error
 	DeleteProgress(ctx context.Context, pool *pgxpool.Pool, progressID, userID uuid.UUID) error
 	GetProgress(ctx context.Context, pool *pgxpool.Pool, filter ProgressFilter) ([]*Progress, int32, error)
+	GetProgressByCategory(ctx context.Context, pool *pgxpool.Pool, filter *ProgressByCategoryFilter) (*ProgressByCategory, error)
 }
 
 type ProgressFilter struct {
@@ -22,6 +24,13 @@ type ProgressFilter struct {
 	DateTo     string
 	Page       int32
 	Limit      int32
+}
+
+type ProgressByCategoryFilter struct {
+	CategoryID uuid.UUID
+	UserID     uuid.UUID
+	DateFrom   string
+	DateTo     string
 }
 
 type ProgressModelImpl struct{}
@@ -78,6 +87,7 @@ func (c *CategoriesModelImpl) GetProgress(ctx context.Context, pool *pgxpool.Poo
 		Select("id, user_id, category_id, progress_type, result_int, result_description, date, COUNT(*) OVER() AS total_count").
 		From("progress")
 
+	// TODO: подумать над between
 	if progressFilter.DateTo != "" {
 		query = query.Where(sq.LtOrEq{"date": progressFilter.DateTo})
 	}
@@ -134,4 +144,39 @@ func (c *CategoriesModelImpl) GetProgress(ctx context.Context, pool *pgxpool.Poo
 	}
 
 	return progresses, int32(totalCount), nil
+}
+
+func (c *CategoriesModelImpl) GetProgressByCategory(
+	ctx context.Context,
+	pool *pgxpool.Pool,
+	filter *ProgressByCategoryFilter) (*ProgressByCategory, error) {
+	query := sq.
+		Select("user_id, category_id, sum(result_int) as sum_result").
+		From("progress").
+		Where(
+			sq.Eq{
+				"category_id": filter.CategoryID,
+				"user_id":     filter.UserID,
+			},
+			sq.Expr("date BETWEEN ? AND ?", filter.DateFrom, filter.DateTo),
+		).
+		GroupBy("user_id", "category_id")
+
+	query = query.PlaceholderFormat(sq.Dollar)
+	sql, args, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var progressByCategory ProgressByCategory
+	err = pool.QueryRow(ctx, sql, args...).Scan(
+		&progressByCategory.UserID,
+		&progressByCategory.CategoryID,
+		&progressByCategory.SumResult,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("somethink went wrong: %v", err)
+	}
+
+	return &progressByCategory, nil
 }

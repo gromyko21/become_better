@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BecomeBetter_MainCategories_FullMethodName = "/example.BecomeBetter/MainCategories"
-	BecomeBetter_AddCategories_FullMethodName  = "/example.BecomeBetter/AddCategories"
-	BecomeBetter_FillProgress_FullMethodName   = "/example.BecomeBetter/FillProgress"
-	BecomeBetter_DeleteProgress_FullMethodName = "/example.BecomeBetter/DeleteProgress"
-	BecomeBetter_GetProgress_FullMethodName    = "/example.BecomeBetter/GetProgress"
+	BecomeBetter_MainCategories_FullMethodName        = "/example.BecomeBetter/MainCategories"
+	BecomeBetter_AddCategories_FullMethodName         = "/example.BecomeBetter/AddCategories"
+	BecomeBetter_FillProgress_FullMethodName          = "/example.BecomeBetter/FillProgress"
+	BecomeBetter_DeleteProgress_FullMethodName        = "/example.BecomeBetter/DeleteProgress"
+	BecomeBetter_GetProgress_FullMethodName           = "/example.BecomeBetter/GetProgress"
+	BecomeBetter_GetProgressByCategory_FullMethodName = "/example.BecomeBetter/GetProgressByCategory"
 )
 
 // BecomeBetterClient is the client API for BecomeBetter service.
@@ -35,6 +36,7 @@ type BecomeBetterClient interface {
 	FillProgress(ctx context.Context, in *FillProgressRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
 	DeleteProgress(ctx context.Context, in *DeleteProgressRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
 	GetProgress(ctx context.Context, in *GetProgressRequest, opts ...grpc.CallOption) (*GetProgressResponse, error)
+	GetProgressByCategory(ctx context.Context, in *ProgressByCategoryRequest, opts ...grpc.CallOption) (*ProgressByCategoryResponse, error)
 }
 
 type becomeBetterClient struct {
@@ -95,6 +97,16 @@ func (c *becomeBetterClient) GetProgress(ctx context.Context, in *GetProgressReq
 	return out, nil
 }
 
+func (c *becomeBetterClient) GetProgressByCategory(ctx context.Context, in *ProgressByCategoryRequest, opts ...grpc.CallOption) (*ProgressByCategoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProgressByCategoryResponse)
+	err := c.cc.Invoke(ctx, BecomeBetter_GetProgressByCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BecomeBetterServer is the server API for BecomeBetter service.
 // All implementations must embed UnimplementedBecomeBetterServer
 // for forward compatibility.
@@ -104,6 +116,7 @@ type BecomeBetterServer interface {
 	FillProgress(context.Context, *FillProgressRequest) (*EmptyResponse, error)
 	DeleteProgress(context.Context, *DeleteProgressRequest) (*EmptyResponse, error)
 	GetProgress(context.Context, *GetProgressRequest) (*GetProgressResponse, error)
+	GetProgressByCategory(context.Context, *ProgressByCategoryRequest) (*ProgressByCategoryResponse, error)
 	mustEmbedUnimplementedBecomeBetterServer()
 }
 
@@ -128,6 +141,9 @@ func (UnimplementedBecomeBetterServer) DeleteProgress(context.Context, *DeletePr
 }
 func (UnimplementedBecomeBetterServer) GetProgress(context.Context, *GetProgressRequest) (*GetProgressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProgress not implemented")
+}
+func (UnimplementedBecomeBetterServer) GetProgressByCategory(context.Context, *ProgressByCategoryRequest) (*ProgressByCategoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProgressByCategory not implemented")
 }
 func (UnimplementedBecomeBetterServer) mustEmbedUnimplementedBecomeBetterServer() {}
 func (UnimplementedBecomeBetterServer) testEmbeddedByValue()                      {}
@@ -240,6 +256,24 @@ func _BecomeBetter_GetProgress_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BecomeBetter_GetProgressByCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProgressByCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BecomeBetterServer).GetProgressByCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BecomeBetter_GetProgressByCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BecomeBetterServer).GetProgressByCategory(ctx, req.(*ProgressByCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BecomeBetter_ServiceDesc is the grpc.ServiceDesc for BecomeBetter service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -266,6 +300,10 @@ var BecomeBetter_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProgress",
 			Handler:    _BecomeBetter_GetProgress_Handler,
+		},
+		{
+			MethodName: "GetProgressByCategory",
+			Handler:    _BecomeBetter_GetProgressByCategory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

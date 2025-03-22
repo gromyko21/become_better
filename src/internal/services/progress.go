@@ -19,6 +19,7 @@ type ProgressInterface interface {
 	FillProgress(ctx context.Context, pool *pgxpool.Pool, progress *models.FillProgress) error
 	DeleteProgress(ctx context.Context, pool *pgxpool.Pool, progressID, userID uuid.UUID) error
 	GetProgress(ctx context.Context, pool *pgxpool.Pool, filter models.ProgressFilter) ([]*models.Progress, int32, error)
+	GetProgressByCategory(ctx context.Context, pool *pgxpool.Pool, filter models.ProgressByCategoryFilter) (*models.ProgressByCategory, error)
 }
 
 type ProgressService struct {
@@ -27,11 +28,12 @@ type ProgressService struct {
 }
 
 func (p *ProgressService) FillProgress(ctx context.Context, pool *pgxpool.Pool, progress *models.FillProgress) error {
-	err := validateProgressDate(progress.Date)
-	if err != nil {
-		logrus.Error(err)
-		return err
-	}
+	// TODO:  вернуть и переопределить
+	// err := validateProgressDate(progress.Date)
+	// if err != nil {
+	// 	logrus.Error(err)
+	// 	return err
+	// }
 	categoryType, err := p.CategoriesModelInterface.CategoryTypeByID(ctx, pool, progress.CategoryID)
 
 	if err != nil {
@@ -80,6 +82,7 @@ func (p *ProgressService) GetProgress(ctx context.Context, pool *pgxpool.Pool, f
 	}
 
 	// Проверяем, что начальная дата не больше конечной
+	// TODO добавить проверку не по строкам, а по дате
 	if dateFrom > dateTo {
 		err := fmt.Errorf("dateFrom (%s) cannot be greater than dateTo (%s)", dateFrom, dateTo)
 		logrus.Error(err)
@@ -95,6 +98,33 @@ func (p *ProgressService) GetProgress(ctx context.Context, pool *pgxpool.Pool, f
 	}
 
 	return progress, countPages, nil
+}
+
+func (p *ProgressService) GetProgressByCategory(
+	ctx context.Context,
+	pool *pgxpool.Pool,
+	filter models.ProgressByCategoryFilter) (*models.ProgressByCategory, error) {
+
+	dateFrom, err := validateProgressDate(filter.DateFrom)
+	if err != nil {
+		return nil, err
+	}
+
+	dateTo, err := validateProgressDate(filter.DateTo)
+	if err != nil {
+		return nil, err
+	}
+	if dateTo.Before(*dateFrom) {
+		return nil, fmt.Errorf("date_from(%d) have to be later or equal then date_to(%d)", dateFrom, dateTo)
+	}
+
+	progress, err := p.ProgressModelInterface.GetProgressByCategory(ctx, pool, &filter)
+	if err != nil {
+		return nil, err
+	}
+
+	progress.CountDays = daysDateDiff(*dateFrom, *dateTo)
+	return progress, nil
 }
 
 // Map progress to gen.GetProgressResponse
@@ -127,15 +157,9 @@ func ProgressToGetProgressResponse(
 	return response, nil
 }
 
+// convert date from 02.01.2006 to 2006-01-02
 func prepareDate(dateS string) (string, error) {
-	err := validateProgressDate(dateS)
-	if err != nil {
-		logrus.Error(err)
-		return "", err
-	}
-
-	layout := "02.01.2006"
-	date, err := time.Parse(layout, dateS)
+	date, err := validateProgressDate(dateS)
 	if err != nil {
 		logrus.Error(err)
 		return "", err
@@ -146,19 +170,26 @@ func prepareDate(dateS string) (string, error) {
 	return preparedDate, nil
 }
 
-func validateProgressDate(progressDate string) error {
+func validateProgressDate(progressDate string) (*time.Time, error) {
 	layout := "02.01.2006"
 	dateField, err := time.Parse(layout, progressDate)
 	if err != nil {
-		return fmt.Errorf("не удалось определить дату в формате DD.MM.YYYY(%s): %v", progressDate, err)
+		return nil, fmt.Errorf("не удалось определить дату в формате DD.MM.YYYY(%s): %v", progressDate, err)
 	}
 
 	now := time.Now()
 	onlyDate := time.Date(now.Year(), now.Month(), now.Day(), 24, 59, 0, 0, now.Location())
 
 	if dateField.After(onlyDate) {
-		return fmt.Errorf("дата(%s) не может быть старше сегодняшнего дня", progressDate)
+		return nil, fmt.Errorf("дата(%s) не может быть старше сегодняшнего дня", progressDate)
 	}
 
-	return nil
+	return &dateField, nil
+}
+
+func daysDateDiff(first, second time.Time) int32 {
+	date1 := time.Date(first.Year(), first.Month(), first.Day(), 0, 0, 0, 0, time.UTC)
+	date2 := time.Date(second.Year(), second.Month(), second.Day(), 0, 0, 0, 0, time.UTC)
+
+	return int32(date2.Sub(date1).Hours() / 24)
 }

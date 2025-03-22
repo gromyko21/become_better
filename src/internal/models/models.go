@@ -24,6 +24,13 @@ type Progress struct {
 	Date         time.Time `db:"date"`
 }
 
+type ProgressByCategory struct {
+	UserID     uuid.UUID `db:"user_id"`
+	CategoryID uuid.UUID `db:"category_id"`
+	SumResult  int32     `db:"sum_result"`
+	CountDays  int32
+}
+
 type FillProgress struct {
 	ID           uuid.UUID `db:"id"`
 	UserID       uuid.UUID `db:"user_id"`

@@ -33,6 +33,11 @@ service BecomeBetter {
       get: "/v1/progress"
     };
   }
+  rpc GetProgressByCategory (ProgressByCategoryRequest) returns (ProgressByCategoryResponse) {
+    option (google.api.http) = {
+      get: "/v1/progress/by_category"
+    };
+  }
 }
 
 message MainCategoriesRequest {}
@@ -94,4 +99,18 @@ message Progress {
   string progress_type = 5;
   int32 result_int = 6;
   string result_description = 7;
+}
+
+message ProgressByCategoryRequest {
+  string category_id = 1;
+  string user_id = 2;
+  string dateFrom = 3; // DD.MM.YYYY
+  string dateTo = 4; // DD.MM.YYYY
+}
+
+message ProgressByCategoryResponse {
+  string category_id = 1;
+  string user_id = 2;
+  int32 sum_result = 3;
+  int32 count_days = 4;
 }

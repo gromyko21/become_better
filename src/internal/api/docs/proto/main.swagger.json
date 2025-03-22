@@ -243,6 +243,56 @@
           "BecomeBetter"
         ]
       }
+    },
+    "/v1/progress/by_category": {
+      "get": {
+        "operationId": "BecomeBetter_GetProgressByCategory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/exampleProgressByCategoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dateFrom",
+            "description": "DD.MM.YYYY",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dateTo",
+            "description": "DD.MM.YYYY",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BecomeBetter"
+        ]
+      }
     }
   },
   "definitions": {
@@ -329,6 +379,25 @@
         },
         "resultDescription": {
           "type": "string"
+        }
+      }
+    },
+    "exampleProgressByCategoryResponse": {
+      "type": "object",
+      "properties": {
+        "categoryId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "sumResult": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "countDays": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

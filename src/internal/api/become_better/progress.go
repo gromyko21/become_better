@@ -92,3 +92,34 @@ func (s *MainService) GetProgress(ctx context.Context, getProgress *gen.GetProgr
 	}
 	return response, nil
 }
+
+func (s *MainService) GetProgressByCategory(ctx context.Context, progressByCategory *gen.ProgressByCategoryRequest) (*gen.ProgressByCategoryResponse, error) {
+	categoryID, err := uuid.Parse(progressByCategory.CategoryId)
+	if err != nil {
+		return nil, fmt.Errorf("can't define category_id(%s), as uuid: %v", progressByCategory.CategoryId, err)
+	}
+
+	userID, err := uuid.Parse(progressByCategory.UserId)
+	if err != nil {
+		return nil, fmt.Errorf("can't define category_id(%s), as uuid: %v", progressByCategory.UserId, err)
+	}
+
+	filter := models.ProgressByCategoryFilter{
+		CategoryID: categoryID,
+		UserID:     userID,
+		DateFrom:   progressByCategory.DateFrom,
+		DateTo:     progressByCategory.DateTo,
+	}
+
+	progress, err := s.ProgressInterface.GetProgressByCategory(ctx, s.App.Postgres.Pool, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return &gen.ProgressByCategoryResponse{
+		UserId:     progress.UserID.String(),
+		CategoryId: progress.CategoryID.String(),
+		CountDays:  progress.CountDays,
+		SumResult:  progress.SumResult,
+	}, nil
+}
